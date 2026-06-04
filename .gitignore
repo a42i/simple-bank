@@ -1,0 +1,4 @@
+.direnv/
+*.pyc
+.mypy_cache/
+/.coverage
