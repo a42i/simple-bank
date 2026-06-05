@@ -37,6 +37,17 @@ def read_balances(input: TextIO) -> Iterable[ReadBalanceResult]:
                 yield InvalidInput(line, f"expected 2 columns, got {len(row)}")
 
 
+def write_balances(output: TextIO, balances: Iterable[BalanceRecord]) -> None:
+    """Treat `output` as an open CSV file and write balance records to it.
+
+    If `output` actually is a file object, it must have been opened with `newline=''`. Refer to
+    https://docs.python.org/3/library/csv.html#csv.reader for more details.
+    """
+    writer = csv.writer(output)
+    for account, amount in balances:
+        writer.writerow((Account.serialise(account), Money.serialise(amount)))
+
+
 def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
     """Treat `input` as an open CSV file and read transaction records from it.
 
@@ -64,14 +75,3 @@ def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
 
             case _:
                 yield InvalidInput(line, f"expected 3 columns, got {len(row)}")
-
-
-def write_balances(output: TextIO, balances: Iterable[BalanceRecord]) -> None:
-    """Treat `output` as an open CSV file and write balance records to it.
-
-    If `output` actually is a file object, it must have been opened with `newline=''`. Refer to
-    https://docs.python.org/3/library/csv.html#csv.reader for more details.
-    """
-    writer = csv.writer(output)
-    for account, amount in balances:
-        writer.writerow((Account.serialise(account), Money.serialise(amount)))
