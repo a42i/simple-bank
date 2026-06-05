@@ -13,9 +13,9 @@ from simple_bank.core import Account, Money
 
 
 def read_balances(input: TextIO) -> Iterable[ReadBalanceResult]:
-    """Treat `input` as a CSV file object and read balance records from it.
+    """Treat `input` as an open CSV file and read balance records from it.
 
-    If `input` is a file object, it must have been opened with `newline=''`. Refer to
+    If `input` actually is a file object, it must have been opened with `newline=''`. Refer to
     https://docs.python.org/3/library/csv.html#csv.reader for more details.
     """
     for line, row in enumerate(csv.reader(input), start=1):
@@ -38,9 +38,9 @@ def read_balances(input: TextIO) -> Iterable[ReadBalanceResult]:
 
 
 def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
-    """Treat `input` as a CSV file object and read transaction records from it.
+    """Treat `input` as an open CSV file and read transaction records from it.
 
-    If `input` is a file object, it must have been opened with `newline=''`. Refer to
+    If `input` actually is a file object, it must have been opened with `newline=''`. Refer to
     https://docs.python.org/3/library/csv.html#csv.reader for more details.
     """
     for line, row in enumerate(csv.reader(input), start=1):
