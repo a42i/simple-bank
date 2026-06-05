@@ -129,19 +129,23 @@ class CompanyAccounts:
     def init_balance(self, account: Account, balance: Money) -> InitBalanceResult:
         """Set the initial balance for an account.
 
-        Return `Result.DUPLICATE` if the account already exists.
+        Return:
+        - `Result.DUPLICATE` if the account already exists.
+        - `Result.OK` if all is well.
         """
         if account in self._balances:
             return Result.DUPLICATE
+
         self._balances[account] = balance
         return Result.OK
 
     def transfer(self, src: Account, dest: Account, amount: Money) -> TransferResult:
-        """Transfer `amount` from `src` to `dest`.
+        """Transfer `amount` from `src` to `dest` account.
 
         Return:
         - `(Result.UNKNOWN_ACCOUNT, account)` if either account doesn't exist.
-        - `Result.INSUFFICIENT_BALANCE` if the `src` doesn't have enough money.
+        - `Result.INSUFFICIENT_BALANCE` if the `src` account doesn't have enough money.
+        - `Result.OK` if all is well.
         """
         src_cur_bal = self._balances.get(src)
         if not src_cur_bal:
@@ -154,6 +158,7 @@ class CompanyAccounts:
         match Money.subtract(src_cur_bal, amount):
             case None:
                 return Result.INSUFFICIENT_BALANCE
+
             case new_src_bal:
                 self._balances[src] = new_src_bal
                 self._balances[dest] = Money.add(dest_cur_bal, amount)
