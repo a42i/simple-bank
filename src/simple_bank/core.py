@@ -11,9 +11,11 @@ from __future__ import annotations
 
 import decimal
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, final
+from enum import Enum
+from typing import ClassVar, Literal, final
 
 
 @final
@@ -101,3 +103,63 @@ class Money:
         The returned value is always parse-able by `parse`.
         """
         return str(money._amount)
+
+
+class Result(Enum):
+    OK = "ok"
+    DUPLICATE = "duplicate"
+    INSUFFICIENT_BALANCE = "insufficient-balance"
+    UNKNOWN_ACCOUNT = "unknown-account"
+
+
+InitBalanceResult = Literal[Result.OK, Result.DUPLICATE]
+TransferResult = (
+    Literal[Result.OK, Result.INSUFFICIENT_BALANCE]
+    | tuple[Literal[Result.UNKNOWN_ACCOUNT], Account]
+)
+
+
+@final
+class CompanyAccounts:
+    """Class to manage the accounts for a company."""
+
+    def __init__(self) -> None:
+        self._balances: dict[Account, Money] = dict()
+
+    def init_balance(self, account: Account, balance: Money) -> InitBalanceResult:
+        """Set the initial balance for an account.
+
+        Return `Result.DUPLICATE` if the account already exists.
+        """
+        if account in self._balances:
+            return Result.DUPLICATE
+        self._balances[account] = balance
+        return Result.OK
+
+    def transfer(self, src: Account, dest: Account, amount: Money) -> TransferResult:
+        """Transfer `amount` from `src` to `dest`.
+
+        Return:
+        - `(Result.UNKNOWN_ACCOUNT, account)` if either account doesn't exist.
+        - `Result.INSUFFICIENT_BALANCE` if the `src` doesn't have enough money.
+        """
+        src_cur_bal = self._balances.get(src)
+        if not src_cur_bal:
+            return (Result.UNKNOWN_ACCOUNT, src)
+
+        dest_cur_bal = self._balances.get(dest)
+        if not dest_cur_bal:
+            return (Result.UNKNOWN_ACCOUNT, dest)
+
+        match Money.subtract(src_cur_bal, amount):
+            case None:
+                return Result.INSUFFICIENT_BALANCE
+            case new_src_bal:
+                self._balances[src] = new_src_bal
+                self._balances[dest] = Money.add(dest_cur_bal, amount)
+                return Result.OK
+
+    def balances(self) -> Iterable[tuple[Account, Money]]:
+        """Yield all (account, balance) pairs."""
+        for account, balance in self._balances.items():
+            yield account, balance

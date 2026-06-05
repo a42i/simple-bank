@@ -2,8 +2,9 @@
 
 import unittest
 from decimal import Decimal
+from typing import ClassVar, override
 
-from simple_bank.core import Account, Money
+from simple_bank.core import Account, CompanyAccounts, Money, Result
 
 
 def _account(value: str) -> Account:
@@ -143,3 +144,92 @@ class TestMoney(unittest.TestCase):
     def test_constructor_raises(self) -> None:
         with self.assertRaises(TypeError):
             _ = Money(Decimal("10.00"))
+
+
+class TestCompanyAccounts(unittest.TestCase):
+    ACCOUNT_1: ClassVar[Account] = _account("0000000000000001")
+    ACCOUNT_2: ClassVar[Account] = _account("0000000000000002")
+
+    @override
+    def setUp(self) -> None:
+        self.accounts = CompanyAccounts()
+
+    def test_init_balance_ok(self) -> None:
+        result = self.accounts.init_balance(self.ACCOUNT_1, _money("10.00"))
+
+        self.assertEqual(Result.OK, result)
+
+    def test_init_balance_duplicate(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("10.00"))
+        result = self.accounts.init_balance(self.ACCOUNT_1, _money("20.00"))
+
+        self.assertEqual(Result.DUPLICATE, result)
+
+    def test_init_balance_duplicate_preserves_original(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("10.00"))
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("20.00"))
+        balances = dict(self.accounts.balances())
+
+        self.assertEqual("10.00", Money.serialise(balances[self.ACCOUNT_1]))
+
+    def test_transfer_ok(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("10.00"))
+        _ = self.accounts.init_balance(self.ACCOUNT_2, _money("5.00"))
+        result = self.accounts.transfer(self.ACCOUNT_1, self.ACCOUNT_2, _money("3.00"))
+
+        self.assertEqual(Result.OK, result)
+
+    def test_transfer_updates_balances(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("10.00"))
+        _ = self.accounts.init_balance(self.ACCOUNT_2, _money("5.00"))
+        _ = self.accounts.transfer(self.ACCOUNT_1, self.ACCOUNT_2, _money("3.00"))
+        balances = dict(self.accounts.balances())
+
+        self.assertEqual("7.00", Money.serialise(balances[self.ACCOUNT_1]))
+        self.assertEqual("8.00", Money.serialise(balances[self.ACCOUNT_2]))
+
+    def test_transfer_full_balance(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("10.00"))
+        _ = self.accounts.init_balance(self.ACCOUNT_2, _money("0.00"))
+        result = self.accounts.transfer(self.ACCOUNT_1, self.ACCOUNT_2, _money("10.00"))
+
+        self.assertEqual(Result.OK, result)
+
+    def test_transfer_insufficient_balance(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("5.00"))
+        _ = self.accounts.init_balance(self.ACCOUNT_2, _money("0.00"))
+        result = self.accounts.transfer(self.ACCOUNT_1, self.ACCOUNT_2, _money("5.01"))
+
+        self.assertEqual(Result.INSUFFICIENT_BALANCE, result)
+
+    def test_transfer_insufficient_balance_preserves_balances(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("5.00"))
+        _ = self.accounts.init_balance(self.ACCOUNT_2, _money("2.00"))
+        _ = self.accounts.transfer(self.ACCOUNT_1, self.ACCOUNT_2, _money("5.01"))
+        balances = dict(self.accounts.balances())
+
+        self.assertEqual("5.00", Money.serialise(balances[self.ACCOUNT_1]))
+        self.assertEqual("2.00", Money.serialise(balances[self.ACCOUNT_2]))
+
+    def test_transfer_unknown_src(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_2, _money("5.00"))
+        result = self.accounts.transfer(self.ACCOUNT_1, self.ACCOUNT_2, _money("1.00"))
+
+        self.assertEqual((Result.UNKNOWN_ACCOUNT, self.ACCOUNT_1), result)
+
+    def test_transfer_unknown_dest(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("5.00"))
+        result = self.accounts.transfer(self.ACCOUNT_1, self.ACCOUNT_2, _money("1.00"))
+
+        self.assertEqual((Result.UNKNOWN_ACCOUNT, self.ACCOUNT_2), result)
+
+    def test_balances_empty(self) -> None:
+        self.assertEqual([], list(self.accounts.balances()))
+
+    def test_balances_returns_all(self) -> None:
+        _ = self.accounts.init_balance(self.ACCOUNT_1, _money("10.00"))
+        _ = self.accounts.init_balance(self.ACCOUNT_2, _money("5.00"))
+        balances = dict(self.accounts.balances())
+
+        self.assertIsNotNone(balances[self.ACCOUNT_1])
+        self.assertIsNotNone(balances[self.ACCOUNT_2])
