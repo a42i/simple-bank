@@ -8,35 +8,6 @@ from simple_bank.codec import BalanceRecord, TransactionRecord
 
 
 class TestCLIRun(unittest.TestCase):
-    @staticmethod
-    def _invert_transactions(
-        txns: Iterable[TransactionRecord],
-    ) -> Iterable[TransactionRecord]:
-        """Returns the "inverse" of a set of transactions.
-
-        i.e. the sequence of transactions, that reverses the affect of `txns`.
-
-        """
-        for src, dest, amount in reversed(list(txns)):
-            yield TransactionRecord(dest, src, amount)
-
-    @staticmethod
-    def _read_transactions(input: TextIO) -> Iterable[TransactionRecord]:
-        for txn in csv_codec.read_transactions(input):
-            match txn:
-                case TransactionRecord():
-                    yield txn
-                case _:
-                    pass
-
-    @staticmethod
-    def _read_balances(input: TextIO) -> Iterable[BalanceRecord]:
-        for balance in csv_codec.read_balances(input):
-            match balance:
-                case BalanceRecord():
-                    yield balance
-                case _:
-                    pass
 
     def test_apply_then_reverse_transactions(self) -> None:
         # Verify that we end up with the same balances when we apply some transactions, and then apply
@@ -97,3 +68,33 @@ class TestCLIRun(unittest.TestCase):
             dict(self._read_balances(input_balances)),
             dict(self._read_balances(next_balances)),
         )
+
+    @staticmethod
+    def _invert_transactions(
+        txns: Iterable[TransactionRecord],
+    ) -> Iterable[TransactionRecord]:
+        """Returns the "inverse" of a set of transactions.
+
+        i.e. the sequence of transactions, that reverses the affect of `txns`.
+
+        """
+        for src, dest, amount in reversed(list(txns)):
+            yield TransactionRecord(dest, src, amount)
+
+    @staticmethod
+    def _read_transactions(input: TextIO) -> Iterable[TransactionRecord]:
+        for txn in csv_codec.read_transactions(input):
+            match txn:
+                case TransactionRecord():
+                    yield txn
+                case _:
+                    pass
+
+    @staticmethod
+    def _read_balances(input: TextIO) -> Iterable[BalanceRecord]:
+        for balance in csv_codec.read_balances(input):
+            match balance:
+                case BalanceRecord():
+                    yield balance
+                case _:
+                    pass
