@@ -30,18 +30,6 @@ class TestCLIRun(unittest.TestCase):
                     pass
 
     @staticmethod
-    def _write_transactions(output: TextIO, txns: Iterable[TransactionRecord]) -> None:
-        writer = csv.writer(output)
-        for src, dest, amount in txns:
-            writer.writerow(
-                (
-                    Account.serialise(src),
-                    Account.serialise(dest),
-                    Money.serialise(amount),
-                )
-            )
-
-    @staticmethod
     def _read_balances(input: TextIO) -> Iterable[BalanceRecord]:
         for balance in csv_codec.read_balances(input):
             match balance:
@@ -89,11 +77,9 @@ class TestCLIRun(unittest.TestCase):
         # Generate inverse transactions and write them to `reversed_transactions`.
         _ = input_transactions.seek(0)
         reversed_transactions = StringIO()
-        self._write_transactions(
+        csv_codec.write_transactions(
             reversed_transactions,
-            self._invert_transactions(
-                self._read_transactions(input_transactions)
-            ),
+            self._invert_transactions(self._read_transactions(input_transactions)),
         )
 
         # Apply `reversed_transactions` to `output_balances` to get `next_balances`.
