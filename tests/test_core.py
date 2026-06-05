@@ -9,14 +9,14 @@ from simple_bank.core import Account, Money
 def _account(value: str) -> Account:
     """Internal helper that assumes `value` is always valid."""
     account = Account.parse(value)
-    assert account
+    assert account is not None
     return account
 
 
 def _money(value: str) -> Money:
     """Internal helper that assumes `value` is always valid."""
     money = Money.parse(value)
-    assert money
+    assert money is not None
     return money
 
 
