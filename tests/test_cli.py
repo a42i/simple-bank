@@ -47,11 +47,10 @@ class TestCLIRun(unittest.TestCase):
 
         # Generate inverse transactions and write them to `reversed_transactions`.
         _ = input_transactions.seek(0)
+        supplied_txns = self._filter_invalid(read_transactions(input_transactions))
+        inverted_txns = self._invert_transactions(supplied_txns)
         reversed_transactions = StringIO()
-        write_transactions(
-            reversed_transactions,
-            self._invert_transactions(self._filter_invalid(read_transactions(input_transactions))),
-        )
+        write_transactions(reversed_transactions, inverted_txns)
 
         # Apply `reversed_transactions` to `output_balances` to get `next_balances`.
         _ = output_balances.seek(0)
