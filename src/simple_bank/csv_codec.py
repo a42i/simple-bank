@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from typing import TextIO
 
 from simple_bank.codec import (
-    Balance,
+    BalanceRecord,
     InvalidInput,
     ReadBalanceResult,
     ReadTransactionResult,
@@ -31,7 +31,7 @@ def read_balances(input: TextIO) -> Iterable[ReadBalanceResult]:
                     yield InvalidInput(line, f"invalid amount '{amount_str}'")
 
                 if account is not None and amount is not None:
-                    yield Balance(account, amount)
+                    yield BalanceRecord(account, amount)
 
             case _:
                 yield InvalidInput(line, f"expected 2 columns, got {len(row)}")
@@ -66,7 +66,7 @@ def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
                 yield InvalidInput(line, f"expected 3 columns, got {len(row)}")
 
 
-def write_balances(output: TextIO, balances: Iterable[Balance]) -> None:
+def write_balances(output: TextIO, balances: Iterable[BalanceRecord]) -> None:
     """Treat `output` as an open CSV file and write balance records to it.
 
     If `output` actually is a file object, it must have been opened with `newline=''`. Refer to

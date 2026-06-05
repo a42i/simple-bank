@@ -5,7 +5,7 @@ A codec is a module that reads/writes balance files and reads transaction files.
 from typing import NamedTuple
 from simple_bank.core import Account, Money
 
-class Balance(NamedTuple):
+class BalanceRecord(NamedTuple):
     account: Account
     amount: Money
 
@@ -16,7 +16,7 @@ class InvalidInput(NamedTuple):
     msg: str
 
 
-ReadBalanceResult = InvalidInput | Balance
+ReadBalanceResult = InvalidInput | BalanceRecord
 
 class Transaction(NamedTuple):
     src: Account

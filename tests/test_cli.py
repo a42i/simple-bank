@@ -5,7 +5,7 @@ from typing import TextIO
 import unittest
 
 from simple_bank import cli, csv_codec
-from simple_bank.codec import Transaction, Balance
+from simple_bank.codec import Transaction, BalanceRecord
 from simple_bank.core import Account, Money
 
 
@@ -42,10 +42,10 @@ class TestCLIRun(unittest.TestCase):
             )
 
     @staticmethod
-    def _read_balances(input: TextIO) -> Iterable[Balance]:
+    def _read_balances(input: TextIO) -> Iterable[BalanceRecord]:
         for balance in csv_codec.read_balances(input):
             match balance:
-                case Balance():
+                case BalanceRecord():
                     yield balance
                 case _:
                     pass
