@@ -46,13 +46,15 @@ class TestMoney(unittest.TestCase):
     def test_parse_invalid(self) -> None:
         cases = [
             "",
-            "1",                # nothing after decimal
+            "1",                # no decimal
+            "1.",               # nothing after the decimal
             "1.0",              # < 2 digits after decimal
             "1.000",            # > 2 digits after decimal
             "-1.00",            # signed value
             "+1.00",            # signed value
             "1.a0",             # non-numeric
             ".00",              # nothing before the decimal
+            "1,00"              # alternate character to decimal
         ]
 
         for case in cases:
