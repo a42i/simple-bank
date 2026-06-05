@@ -10,3 +10,8 @@ test: check
 [doc("Show test coverage")]
 cover: test
     coverage report -m
+
+[no-exit-message]
+[doc("Run cli module")]
+run *args:
+    @PYTHONPATH="src" python -m simple_bank.cli {{ args }}
