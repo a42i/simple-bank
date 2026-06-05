@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Literal, TextIO, cast
 
 from simple_bank import csv_codec
-from simple_bank.codec import Balance, InputError, Transaction
+from simple_bank.codec import Balance, InvalidInput, Transaction
 from simple_bank.core import CompanyAccounts, Result
 
 
@@ -67,7 +67,7 @@ def _apply_input_transactions(input: TextIO, accounts: CompanyAccounts) -> None:
                             f"(input transactions):transfer:unknown {account=}"
                         )
 
-            case InputError(line, msg):
+            case InvalidInput(line, msg):
                 raise ProgramError(f"(input transactions):read:{line=}, {msg=}")
 
 
@@ -83,7 +83,7 @@ def _read_input_balances(input: TextIO, accounts: CompanyAccounts) -> None:
                             f"(input balances):init:duplicate {account=}"
                         )
 
-            case InputError(line, msg):
+            case InvalidInput(line, msg):
                 raise ProgramError(f"(input balances):read:{line=}, {msg=}")
 
 

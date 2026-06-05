@@ -4,7 +4,7 @@ from typing import TextIO
 
 from simple_bank.codec import (
     Balance,
-    InputError,
+    InvalidInput,
     ReadBalanceResult,
     ReadTransactionResult,
     Transaction,
@@ -25,16 +25,16 @@ def read_balances(input: TextIO) -> Iterable[ReadBalanceResult]:
                 amount = Money.parse(amount_str.strip())
 
                 if account is None:
-                    yield InputError(line, f"invalid account '{account_str}'")
+                    yield InvalidInput(line, f"invalid account '{account_str}'")
 
                 if amount is None:
-                    yield InputError(line, f"invalid amount '{amount_str}'")
+                    yield InvalidInput(line, f"invalid amount '{amount_str}'")
 
                 if account is not None and amount is not None:
                     yield Balance(account, amount)
 
             case _:
-                yield InputError(line, f"expected 2 columns, got {len(row)}")
+                yield InvalidInput(line, f"expected 2 columns, got {len(row)}")
 
 
 def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
@@ -51,19 +51,19 @@ def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
                 amount = Money.parse(amount_str.strip())
 
                 if src is None:
-                    yield InputError(line, f"invalid source account '{src_str}'")
+                    yield InvalidInput(line, f"invalid source account '{src_str}'")
 
                 if dest is None:
-                    yield InputError(line, f"invalid destination account '{dst_str}'")
+                    yield InvalidInput(line, f"invalid destination account '{dst_str}'")
 
                 if amount is None:
-                    yield InputError(line, f"invalid amount '{amount_str}'")
+                    yield InvalidInput(line, f"invalid amount '{amount_str}'")
 
                 if not (src is None or dest is None or amount is None):
                     yield Transaction(src, dest, amount)
 
             case _:
-                yield InputError(line, f"expected 3 columns, got {len(row)}")
+                yield InvalidInput(line, f"expected 3 columns, got {len(row)}")
 
 
 def write_balances(output: TextIO, balances: Iterable[Balance]) -> None:

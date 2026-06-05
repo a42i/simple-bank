@@ -9,18 +9,18 @@ class Balance(NamedTuple):
     account: Account
     amount: Money
 
-class InputError(NamedTuple):
+class InvalidInput(NamedTuple):
     line: int
     # In a serious system, we would use a tagged union, so callers can decide what action to take
     # depending on the type of error. Trying to match error messages is less than ideal.
     msg: str
 
 
-ReadBalanceResult = InputError | Balance
+ReadBalanceResult = InvalidInput | Balance
 
 class Transaction(NamedTuple):
     src: Account
     dest: Account
     amount: Money
 
-ReadTransactionResult = InputError | Transaction
+ReadTransactionResult = InvalidInput | Transaction

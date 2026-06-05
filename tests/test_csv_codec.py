@@ -6,7 +6,7 @@ from typing import ClassVar
 
 from simple_bank.codec import (
     Balance,
-    InputError,
+    InvalidInput,
     ReadBalanceResult,
     ReadTransactionResult,
     Transaction,
@@ -59,13 +59,13 @@ class TestReadBalances(unittest.TestCase):
 
     def test_invalid_account(self) -> None:
         [result] = self._read_balances(f"bad,{self._AMOUNT1}")
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
     def test_invalid_amount(self) -> None:
         [result] = self._read_balances(f"{self._ACCOUNT1},bad")
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
@@ -75,19 +75,19 @@ class TestReadBalances(unittest.TestCase):
         self.assertEqual(len(results), 2)
 
         for result in results:
-            assert isinstance(result, InputError)
+            assert isinstance(result, InvalidInput)
 
             self.assertEqual(result.line, 1)
 
     def test_too_few_columns(self) -> None:
         [result] = self._read_balances(self._ACCOUNT1)
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
     def test_too_many_columns(self) -> None:
         [result] = self._read_balances(f"{self._ACCOUNT1},{self._AMOUNT1},extra")
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
@@ -108,7 +108,7 @@ class TestReadBalances(unittest.TestCase):
         )
 
         e1, e2 = results[1], results[2]
-        assert isinstance(e1, InputError) and isinstance(e2, InputError)
+        assert isinstance(e1, InvalidInput) and isinstance(e2, InvalidInput)
 
         self.assertEqual(e1.line, 2)
         self.assertEqual(e2.line, 2)
@@ -182,19 +182,19 @@ class TestReadTransactions(unittest.TestCase):
 
     def test_invalid_src(self) -> None:
         [result] = self._read_transactions(f"bad,{self._ACCOUNT2},{self._AMOUNT1}")
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
     def test_invalid_dest(self) -> None:
         [result] = self._read_transactions(f"{self._ACCOUNT1},bad,{self._AMOUNT1}")
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
     def test_invalid_amount(self) -> None:
         [result] = self._read_transactions(f"{self._ACCOUNT1},{self._ACCOUNT2},bad")
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
@@ -204,13 +204,13 @@ class TestReadTransactions(unittest.TestCase):
         self.assertEqual(len(results), 3)
 
         for result in results:
-            assert isinstance(result, InputError)
+            assert isinstance(result, InvalidInput)
 
             self.assertEqual(result.line, 1)
 
     def test_too_few_columns(self) -> None:
         [result] = self._read_transactions(f"{self._ACCOUNT1},{self._ACCOUNT2}")
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
@@ -218,7 +218,7 @@ class TestReadTransactions(unittest.TestCase):
         [result] = self._read_transactions(
             f"{self._ACCOUNT1},{self._ACCOUNT2},{self._AMOUNT1},extra"
         )
-        assert isinstance(result, InputError)
+        assert isinstance(result, InvalidInput)
 
         self.assertEqual(result.line, 1)
 
@@ -245,9 +245,9 @@ class TestReadTransactions(unittest.TestCase):
 
         e1, e2, e3 = results[1], results[2], results[3]
         assert (
-            isinstance(e1, InputError)
-            and isinstance(e2, InputError)
-            and isinstance(e3, InputError)
+            isinstance(e1, InvalidInput)
+            and isinstance(e2, InvalidInput)
+            and isinstance(e3, InvalidInput)
         )
 
         self.assertEqual(e1.line, 2)
