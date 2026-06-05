@@ -1,10 +1,10 @@
 import unittest
 from collections.abc import Iterable
 from io import StringIO
-from typing import TextIO
 
-from simple_bank import cli, csv_codec
-from simple_bank.codec import BalanceRecord, TransactionRecord
+from simple_bank import cli
+from simple_bank.codec import InvalidInput, TransactionRecord
+from simple_bank.csv_codec import read_balances, read_transactions, write_transactions
 
 
 class TestCLIRun(unittest.TestCase):
@@ -48,9 +48,9 @@ class TestCLIRun(unittest.TestCase):
         # Generate inverse transactions and write them to `reversed_transactions`.
         _ = input_transactions.seek(0)
         reversed_transactions = StringIO()
-        csv_codec.write_transactions(
+        write_transactions(
             reversed_transactions,
-            self._invert_transactions(self._read_transactions(input_transactions)),
+            self._invert_transactions(self._filter_invalid(read_transactions(input_transactions))),
         )
 
         # Apply `reversed_transactions` to `output_balances` to get `next_balances`.
@@ -65,8 +65,8 @@ class TestCLIRun(unittest.TestCase):
         _ = next_balances.seek(0)
 
         self.assertDictEqual(
-            dict(self._read_balances(input_balances)),
-            dict(self._read_balances(next_balances)),
+            dict(self._filter_invalid(read_balances(input_balances))),
+            dict(self._filter_invalid(read_balances(next_balances))),
         )
 
     @staticmethod
@@ -82,19 +82,5 @@ class TestCLIRun(unittest.TestCase):
             yield TransactionRecord(dest, src, amount)
 
     @staticmethod
-    def _read_transactions(input: TextIO) -> Iterable[TransactionRecord]:
-        for txn in csv_codec.read_transactions(input):
-            match txn:
-                case TransactionRecord():
-                    yield txn
-                case _:
-                    pass
-
-    @staticmethod
-    def _read_balances(input: TextIO) -> Iterable[BalanceRecord]:
-        for balance in csv_codec.read_balances(input):
-            match balance:
-                case BalanceRecord():
-                    yield balance
-                case _:
-                    pass
+    def _filter_invalid[T](items: Iterable[T|InvalidInput]) -> Iterable[T]:
+        return (x for x in items if not isinstance(x, InvalidInput))
