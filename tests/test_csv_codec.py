@@ -109,7 +109,8 @@ class TestReadBalances(unittest.TestCase):
 
         self.assertEqual(len(results), 4)
         self.assertEqual(
-            results[0], BalanceRecord(util.account(self._ACCOUNT1), util.money(self._AMOUNT1))
+            results[0],
+            BalanceRecord(util.account(self._ACCOUNT1), util.money(self._AMOUNT1)),
         )
 
         e1, e2 = results[1], results[2]
@@ -118,7 +119,8 @@ class TestReadBalances(unittest.TestCase):
         self.assertEqual(e1.line, 2)
         self.assertEqual(e2.line, 2)
         self.assertEqual(
-            results[3], BalanceRecord(util.account(self._ACCOUNT1), util.money(self._AMOUNT1))
+            results[3],
+            BalanceRecord(util.account(self._ACCOUNT1), util.money(self._AMOUNT1)),
         )
 
 
