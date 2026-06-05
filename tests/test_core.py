@@ -6,14 +6,14 @@ from decimal import Decimal
 from simple_bank.core import Account, Money
 
 
-def _mk_account(value: str) -> Account:
+def _account(value: str) -> Account:
     """Internal helper that assumes `value` is always valid."""
     account = Account.parse(value)
     assert account
     return account
 
 
-def _mk_money(value: str) -> Money:
+def _money(value: str) -> Money:
     """Internal helper that assumes `value` is always valid."""
     money = Money.parse(value)
     assert money
@@ -38,14 +38,14 @@ class TestAccount(unittest.TestCase):
 
     def test_parse_valid(self) -> None:
         value = "0123456789123456"
-        parsed = _mk_account(value)
+        account = _account(value)
 
-        self.assertEqual(value, Account.serialise(parsed))
+        self.assertEqual(value, Account.serialise(account))
 
     def test_serialise(self) -> None:
-        parsed = _mk_account("0123456789123456")
+        account = _account("0123456789123456")
 
-        self.assertEqual(parsed, Account.parse(Account.serialise(parsed)))
+        self.assertEqual(account, Account.parse(Account.serialise(account)))
 
     def test_constructor_fails(self) -> None:
         with self.assertRaises(TypeError):
@@ -80,14 +80,14 @@ class TestMoney(unittest.TestCase):
 
         for case in cases:
             with self.subTest(f"{case=}"):
-                parsed = _mk_money(case)
+                money = _money(case)
 
-                self.assertEqual(case, Money.serialise(parsed))
+                self.assertEqual(case, Money.serialise(money))
 
     def test_serialise(self) -> None:
-        parsed = _mk_money("10.99")
+        money = _money("10.99")
 
-        self.assertEqual(parsed, Money.parse(Money.serialise(parsed)))
+        self.assertEqual(money, Money.parse(Money.serialise(money)))
 
     def test_add(self) -> None:
         cases = [
@@ -100,8 +100,8 @@ class TestMoney(unittest.TestCase):
 
         for val_a, val_b, val_c in cases:
             with self.subTest(f"{val_a=}, {val_b=}"):
-                a = _mk_money(val_a)
-                b = _mk_money(val_b)
+                a = _money(val_a)
+                b = _money(val_b)
 
                 c = Money.add(a, b)
                 assert c is not None
@@ -119,8 +119,8 @@ class TestMoney(unittest.TestCase):
 
         for val_a, val_b, val_c in cases:
             with self.subTest(f"{val_a=}, {val_b=}"):
-                a = _mk_money(val_a)
-                b = _mk_money(val_b)
+                a = _money(val_a)
+                b = _money(val_b)
 
                 c = Money.subtract(a, b)
                 assert c is not None
@@ -135,8 +135,8 @@ class TestMoney(unittest.TestCase):
 
         for val_a, val_b in cases:
             with self.subTest(f"{val_a=}, {val_b=}"):
-                a = _mk_money(val_a)
-                b = _mk_money(val_b)
+                a = _money(val_a)
+                b = _money(val_b)
 
                 self.assertIsNone(Money.subtract(a, b))
 
