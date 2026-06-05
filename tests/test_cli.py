@@ -9,7 +9,7 @@ from simple_bank.csv_codec import read_balances, read_transactions, write_transa
 
 class TestCLIRun(unittest.TestCase):
 
-    def test_apply_then_reverse_transactions(self) -> None:
+    def test_apply_then_invert_transactions(self) -> None:
         # Verify that we end up with the same balances when we apply some transactions, and then apply
         # their inverse.
         #
@@ -45,18 +45,18 @@ class TestCLIRun(unittest.TestCase):
         output_balances = StringIO()
         _ = cli.run(input_balances, input_transactions, output_balances)
 
-        # Generate inverse transactions and write them to `reversed_transactions`.
+        # Generate inverse transactions and write them to `inverted_transactions`.
         _ = input_transactions.seek(0)
         supplied_txns = self._filter_invalid(read_transactions(input_transactions))
         inverted_txns = self._invert_transactions(supplied_txns)
-        reversed_transactions = StringIO()
-        write_transactions(reversed_transactions, inverted_txns)
+        inverted_transactions = StringIO()
+        write_transactions(inverted_transactions, inverted_txns)
 
-        # Apply `reversed_transactions` to `output_balances` to get `next_balances`.
+        # Apply `inverted_transactions` to `output_balances` to get `next_balances`.
         _ = output_balances.seek(0)
-        _ = reversed_transactions.seek(0)
+        _ = inverted_transactions.seek(0)
         next_balances = StringIO()
-        _ = cli.run(output_balances, reversed_transactions, next_balances)
+        _ = cli.run(output_balances, inverted_transactions, next_balances)
 
         # Now, `input_balances` and `next_balances` "should" be the same if there aren't any bugs in
         # our code.
