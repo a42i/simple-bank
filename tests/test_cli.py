@@ -13,7 +13,7 @@ class TestCLIRun(unittest.TestCase):
         # Verify that we end up with the same balances when we apply some transactions, and then apply
         # their inverse.
         #
-        # This is also an excellent candicate for a property based test, but that is likely overkill
+        # This is also an excellent candidate for a property based test, but that is likely overkill
         # for this exercise.
 
         # The inputs for this test are from the coding challenge bundle.
