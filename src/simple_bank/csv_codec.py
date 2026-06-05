@@ -75,3 +75,16 @@ def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
 
             case _:
                 yield InvalidInput(line, f"expected 3 columns, got {len(row)}")
+
+
+def write_transactions(
+    output: TextIO, transactions: Iterable[TransactionRecord]
+) -> None:
+    """Treat `output` as an open CSV file and write transaction records to it.
+
+    If `output` actually is a file object, it must have been opened with `newline=''`. Refer to
+    https://docs.python.org/3/library/csv.html#csv.reader for more details.
+    """
+    writer = csv.writer(output)
+    for src, dest, amount in transactions:
+        writer.writerow((Account.serialise(src), Account.serialise(dest), Money.serialise(amount)))
