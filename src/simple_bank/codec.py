@@ -18,9 +18,9 @@ class InvalidInput(NamedTuple):
 
 ReadBalanceResult = InvalidInput | BalanceRecord
 
-class Transaction(NamedTuple):
+class TransactionRecord(NamedTuple):
     src: Account
     dest: Account
     amount: Money
 
-ReadTransactionResult = InvalidInput | Transaction
+ReadTransactionResult = InvalidInput | TransactionRecord

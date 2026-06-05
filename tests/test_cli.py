@@ -5,32 +5,32 @@ from typing import TextIO
 import unittest
 
 from simple_bank import cli, csv_codec
-from simple_bank.codec import Transaction, BalanceRecord
+from simple_bank.codec import TransactionRecord, BalanceRecord
 from simple_bank.core import Account, Money
 
 
 class TestCLIRun(unittest.TestCase):
     @staticmethod
-    def _invert_transactions(txns: Iterable[Transaction]) -> Iterable[Transaction]:
+    def _invert_transactions(txns: Iterable[TransactionRecord]) -> Iterable[TransactionRecord]:
         """Returns the "inverse" of a set of transactions.
 
         i.e. the sequence of transactions, that reverses the affect of `txns`.
 
         """
         for src, dest, amount in reversed(list(txns)):
-            yield Transaction(dest, src, amount)
+            yield TransactionRecord(dest, src, amount)
 
     @staticmethod
-    def _read_transactions(input: TextIO) -> Iterable[Transaction]:
+    def _read_transactions(input: TextIO) -> Iterable[TransactionRecord]:
         for txn in csv_codec.read_transactions(input):
             match txn:
-                case Transaction():
+                case TransactionRecord():
                     yield txn
                 case _:
                     pass
 
     @staticmethod
-    def _write_transactions(output: TextIO, txns: Iterable[Transaction]) -> None:
+    def _write_transactions(output: TextIO, txns: Iterable[TransactionRecord]) -> None:
         writer = csv.writer(output)
         for src, dest, amount in txns:
             writer.writerow(

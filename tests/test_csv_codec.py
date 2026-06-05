@@ -9,7 +9,7 @@ from simple_bank.codec import (
     InvalidInput,
     ReadBalanceResult,
     ReadTransactionResult,
-    Transaction,
+    TransactionRecord,
 )
 from simple_bank.csv_codec import read_balances, read_transactions, write_balances
 from tests import util
@@ -135,7 +135,7 @@ class TestReadTransactions(unittest.TestCase):
                 f"{self._ACCOUNT1},{self._ACCOUNT2},{self._AMOUNT1}"
             ),
             [
-                Transaction(
+                TransactionRecord(
                     util.account(self._ACCOUNT1),
                     util.account(self._ACCOUNT2),
                     util.money(self._AMOUNT1),
@@ -153,12 +153,12 @@ class TestReadTransactions(unittest.TestCase):
         self.assertEqual(
             results,
             [
-                Transaction(
+                TransactionRecord(
                     util.account(self._ACCOUNT1),
                     util.account(self._ACCOUNT2),
                     util.money(self._AMOUNT1),
                 ),
-                Transaction(
+                TransactionRecord(
                     util.account(self._ACCOUNT2),
                     util.account(account3),
                     util.money(amount2),
@@ -172,7 +172,7 @@ class TestReadTransactions(unittest.TestCase):
                 f" {self._ACCOUNT1} , {self._ACCOUNT2} , {self._AMOUNT1} "
             ),
             [
-                Transaction(
+                TransactionRecord(
                     util.account(self._ACCOUNT1),
                     util.account(self._ACCOUNT2),
                     util.money(self._AMOUNT1),
@@ -236,7 +236,7 @@ class TestReadTransactions(unittest.TestCase):
         self.assertEqual(len(results), 5)
         self.assertEqual(
             results[0],
-            Transaction(
+            TransactionRecord(
                 util.account(self._ACCOUNT1),
                 util.account(self._ACCOUNT2),
                 util.money(self._AMOUNT1),
@@ -255,7 +255,7 @@ class TestReadTransactions(unittest.TestCase):
         self.assertEqual(e3.line, 2)
         self.assertEqual(
             results[4],
-            Transaction(
+            TransactionRecord(
                 util.account(self._ACCOUNT1),
                 util.account(self._ACCOUNT2),
                 util.money(self._AMOUNT1),

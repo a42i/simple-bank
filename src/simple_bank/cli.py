@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Literal, TextIO, cast
 
 from simple_bank import csv_codec
-from simple_bank.codec import BalanceRecord, InvalidInput, Transaction
+from simple_bank.codec import BalanceRecord, InvalidInput, TransactionRecord
 from simple_bank.core import CompanyAccounts, Result
 
 
@@ -54,7 +54,7 @@ def run(
 def _apply_input_transactions(input: TextIO, accounts: CompanyAccounts) -> None:
     for txn in csv_codec.read_transactions(input):
         match txn:
-            case Transaction(src, dest, amount):
+            case TransactionRecord(src, dest, amount):
                 match accounts.transfer(src, dest, amount):
                     case Result.OK:
                         pass

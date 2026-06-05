@@ -7,7 +7,7 @@ from simple_bank.codec import (
     InvalidInput,
     ReadBalanceResult,
     ReadTransactionResult,
-    Transaction,
+    TransactionRecord,
 )
 from simple_bank.core import Account, Money
 
@@ -60,7 +60,7 @@ def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
                     yield InvalidInput(line, f"invalid amount '{amount_str}'")
 
                 if not (src is None or dest is None or amount is None):
-                    yield Transaction(src, dest, amount)
+                    yield TransactionRecord(src, dest, amount)
 
             case _:
                 yield InvalidInput(line, f"expected 3 columns, got {len(row)}")
