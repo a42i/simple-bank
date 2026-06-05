@@ -11,7 +11,7 @@ from simple_bank.codec import (
     ReadTransactionResult,
     Transaction,
 )
-from simple_bank.csv_codec import read_balances, read_transactions
+from simple_bank.csv_codec import read_balances, read_transactions, write_balances
 from tests import util
 
 
@@ -261,3 +261,34 @@ class TestReadTransactions(unittest.TestCase):
                 util.money(self._AMOUNT1),
             ),
         )
+
+
+class TestWriteBalances(unittest.TestCase):
+    _ACCOUNT1: ClassVar[str] = "1000000000000000"
+    _AMOUNT1: ClassVar[str] = "1.00"
+
+    @staticmethod
+    def _write_balances(balances: list[Balance]) -> str:
+        output = io.StringIO()
+        write_balances(output, balances)
+        return output.getvalue()
+
+    def test_empty_input(self) -> None:
+        self.assertEqual(self._write_balances([]), "")
+
+    # Manually checking the data written by `write_balances` will unnecessarily couple this test to
+    # the output format. As long as we can round trip successfully, we can have enough confidence that
+    # the code functions as it is supposed to.
+    #
+    # This is an excellent candidate for a property based test, but that is overkill for this
+    # exercise.
+
+    def test_round_trip(self) -> None:
+        balances = [
+            Balance(util.account(self._ACCOUNT1), util.money(self._AMOUNT1)),
+            Balance(util.account("2000000000000000"), util.money("2.00")),
+        ]
+        output = io.StringIO()
+        write_balances(output, balances)
+        _ = output.seek(0)
+        self.assertEqual(list(read_balances(output)), balances)

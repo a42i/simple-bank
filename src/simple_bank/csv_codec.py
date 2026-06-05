@@ -64,3 +64,14 @@ def read_transactions(input: TextIO) -> Iterable[ReadTransactionResult]:
 
             case _:
                 yield InputError(line, f"expected 3 columns, got {len(row)}")
+
+
+def write_balances(output: TextIO, balances: Iterable[Balance]) -> None:
+    """Treat `output` as an open CSV file and write balance records to it.
+
+    If `output` actually is a file object, it must have been opened with `newline=''`. Refer to
+    https://docs.python.org/3/library/csv.html#csv.reader for more details.
+    """
+    writer = csv.writer(output)
+    for account, amount in balances:
+        writer.writerow((Account.serialise(account), Money.serialise(amount)))
