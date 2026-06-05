@@ -11,7 +11,9 @@ from simple_bank.core import Account, Money
 
 class TestCLIRun(unittest.TestCase):
     @staticmethod
-    def _invert_transactions(txns: Iterable[TransactionRecord]) -> Iterable[TransactionRecord]:
+    def _invert_transactions(
+        txns: Iterable[TransactionRecord],
+    ) -> Iterable[TransactionRecord]:
         """Returns the "inverse" of a set of transactions.
 
         i.e. the sequence of transactions, that reverses the affect of `txns`.
