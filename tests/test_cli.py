@@ -1,12 +1,10 @@
+import unittest
 from collections.abc import Iterable
-import csv
 from io import StringIO
 from typing import TextIO
-import unittest
 
 from simple_bank import cli, csv_codec
-from simple_bank.codec import TransactionRecord, BalanceRecord
-from simple_bank.core import Account, Money
+from simple_bank.codec import BalanceRecord, TransactionRecord
 
 
 class TestCLIRun(unittest.TestCase):
