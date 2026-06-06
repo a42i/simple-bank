@@ -159,8 +159,8 @@ class CompanyAccounts:
             case None:
                 return Result.INSUFFICIENT_BALANCE
 
-            case new_src_bal:
-                self._balances[src] = new_src_bal
+            case src_new_bal:
+                self._balances[src] = src_new_bal
                 self._balances[dest] = Money.add(dest_cur_bal, amount)
                 return Result.OK
 
