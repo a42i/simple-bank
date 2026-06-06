@@ -1,6 +1,6 @@
 """Common types for all codecs.
 
-A codec is a module that reads/writes balance files and reads transaction files.
+A codec is a module that reads/writes balance and transaction files.
 """
 from typing import NamedTuple
 from simple_bank.core import Account, Money
